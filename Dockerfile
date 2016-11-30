@@ -13,6 +13,7 @@ RUN touch /etc/nginx/conf.d/ingress.conf
 
 ADD ./ingress /ingress
 ADD ./docker-entrypoint.sh /docker-entrypoint.sh
+ADD index.html /usr/share/nginx/html/index.html
 
 HEALTHCHECK --interval=10s --timeout=2s --retries=2 \
             CMD curl -A "Docker health check" http://127.0.0.1 && kill -0 `cat /ingress/ingress.pid`

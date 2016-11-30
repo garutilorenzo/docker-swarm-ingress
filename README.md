@@ -15,11 +15,14 @@ updates the nginx configuration.
 
 ```
 docker service create --name ingress \
-  --net ingress-routing \
+  --network ingress-routing \
   -p 80:80 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
+  --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
+  --constraint node.role==manager \
   foxylion/swarm-ingress
 ```
+
+It is important to add the
 
 The ingress service should be scaled to multiple nodes to prevent short outages
 when the node with the ingress services becomes unresponsive.
