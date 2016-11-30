@@ -8,8 +8,9 @@ RUN pip install docker-py jinja2
 ENV DOCKER_HOST "unix:///var/run/docker.sock"
 ENV UPDATE_INTERVAL "1"
 ENV DEBUG "false"
-
-RUN touch /etc/nginx/conf.d/ingress.conf
+ENV USE_REQUEST_ID "true"
+ENV LOG_FORMAT "default"
+ENV LOG_CUSTOM ""
 
 ADD ./ingress /ingress
 ADD ./docker-entrypoint.sh /docker-entrypoint.sh
