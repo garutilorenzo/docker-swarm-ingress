@@ -41,6 +41,7 @@ http {
         server_name {{ service.Spec.Labels['ingress.host'] }};
 
         location / {
+            resolver 127.0.0.11;
             set $service_host {{ service.Spec.Name }};
             set $service_port {{ service.Spec.Labels['ingress.port']|default('80') }};
             set $service_path {{ service.Spec.Labels['ingress.path']|default('/') }};
