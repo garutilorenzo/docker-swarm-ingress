@@ -56,7 +56,7 @@ while True:
 
     if current_nginx_config != new_nginx_config:
         current_nginx_config = new_nginx_config
-        print "[Ingress Auto Configuration] Services have changed, updating nginx configuration..."
+        print("[Ingress Auto Configuration] Services have changed, updating nginx configuration...")
         with open(nginx_config_path, 'w') as handle:
             handle.write(new_nginx_config)
 
@@ -64,6 +64,6 @@ while True:
         subprocess.call(['nginx', '-s', 'reload'])
 
         if os.environ['DEBUG'] in ['true', 'yes', '1']:
-            print new_nginx_config
+            print(new_nginx_config)
 
     time.sleep(int(os.environ['UPDATE_INTERVAL']))

@@ -1,10 +1,10 @@
-FROM nginx:1.11-alpine
+FROM nginx:alpine
 MAINTAINER Jakob Jarosch <dev@jakobjarosch.de>
 
-RUN apk add --update python py-pip curl; \
-    rm -rf /var/cache/apk/*
-RUN pip install docker-py jinja2
-
+RUN apk add --update --no-cache python3 curl && ln -sf python3 /usr/bin/python
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
+RUN pip3 install docker-py jinja2
 ENV DOCKER_HOST "unix:///var/run/docker.sock"
 ENV UPDATE_INTERVAL "1"
 ENV DEBUG "false"
