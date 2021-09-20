@@ -19,6 +19,7 @@ services:
       placement:
         constraints: [node.role == manager]
 
+# docker network create --driver overlay ingress-routing
 networks:
   ingress:
     external: true
