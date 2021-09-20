@@ -1,16 +1,15 @@
 version: "3.8"
 services:
-
   nginx:
-    image: garutilorenzo/docker-swarm-ingress:latest 
+    image: foxylion/docker-swarm-ingress:latest
     ports:
-     - 80:80
+      - 80:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ingress
     deploy:
-      replicas: 3 
+      replicas: 3
       update_config:
         parallelism: 2
         delay: 10s
