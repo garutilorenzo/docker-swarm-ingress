@@ -8,7 +8,33 @@ events {
     worker_connections  1024;
 }
 
+stream {
+    map $ssl_preread_server_name $name {
+        {% for service in config -%}
+        {% if 'Labels' in service.Spec and 'ingress.host' in service.Spec.Labels and 'ingress.ssl' in service.Spec.Labels -%}
+        {{ service.Spec.Labels['ingress.host'] }}       backend-{{ service.Spec.Name }};
+        {% endif -%}
+        {% endfor %}
+    }
+  
+    {% for service in config -%}
+    {% if 'Labels' in service.Spec and 'ingress.host' in service.Spec.Labels and 'ingress.ssl' in service.Spec.Labels -%}
+    upstream backend-{{ service.Spec.Name }} {
+        server {{ service.Spec.Name }}:443;
+    }
+    {% endif -%}
+    {% endfor %}
+    proxy_protocol on;
+  
+    server {
+        listen      443;
+        proxy_pass  $name;
+        ssl_preread on;
+    }
+}
+
 http {
+    resolver 127.0.0.11 ipv6=off;
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
@@ -35,7 +61,16 @@ http {
     }
 
     {% for service in config -%}
-    {% if 'Labels' in service.Spec and 'ingress.host' in service.Spec.Labels -%}
+    {% if 'Labels' in service.Spec and 'ingress.host' in service.Spec.Labels and 'ingress.ssl' in service.Spec.Labels and 'ingress.ssl_redirect' in service.Spec.Labels -%}
+    server {
+        listen 80;
+        server_name {{ service.Spec.Labels['ingress.host'] }};
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+    {% elif 'Labels' in service.Spec and 'ingress.host' in service.Spec.Labels -%}
     server {
         listen 80;
         server_name {{ service.Spec.Labels['ingress.host'] }};

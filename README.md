@@ -76,3 +76,16 @@ docker service update \
   --label-add ingress.port=8080 \
   my-service
 ```
+### SSL
+
+It's possible to enable SSL Passthrough using the following labels:
+
+* --label-add ingress.ssl=enable
+* --label-add ingress.ssl_redirect=enable
+
+with the ingress.ssl=enable we enalble the SSL Passthrough to our backend:
+
+Client --> Nginx-Ingress (No SSL) --> Backend (SSL)
+
+with ingress.ssl_redirect=enable nignx redirect all http traffic to https.
+For a detailed example see examples/example-ssl-service.yml
