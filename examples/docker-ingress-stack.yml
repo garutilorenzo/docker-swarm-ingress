@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   nginx:
-    image: foxylion/docker-swarm-ingress:latest
+    image: garutilorenzo/docker-swarm-ingress:latest
     ports:
       - 80:80
     volumes:
