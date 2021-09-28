@@ -44,6 +44,48 @@ http {
     sendfile on;
     keepalive_timeout 65;
 
+    # If we receive X-Forwarded-Proto, pass it through; otherwise, pass along the
+    # scheme used to connect to this server
+    map $http_x_forwarded_proto $proxy_x_forwarded_proto {
+        default $http_x_forwarded_proto;
+        ''      $scheme;
+    }
+    # If we receive X-Forwarded-Port, pass it through; otherwise, pass along the
+    # server port the client connected to
+    map $http_x_forwarded_port $proxy_x_forwarded_port {
+        default $http_x_forwarded_port;
+        ''      $server_port;
+    }
+    # If we receive Upgrade, set Connection to "upgrade"; otherwise, delete any
+    # Connection header that may have been passed to this server
+    map $http_upgrade $proxy_connection {
+        default upgrade;
+        '' close;
+    }
+    # Apply fix for very long server names
+    server_names_hash_bucket_size 128;
+
+    # Set appropriate X-Forwarded-Ssl header based on $proxy_x_forwarded_proto
+        map $proxy_x_forwarded_proto $proxy_x_forwarded_ssl {
+        default off;
+        https on;
+    }
+    gzip_types text/plain text/css application/javascript application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+        
+    # HTTP 1.1 support
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_set_header Host $http_host;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $proxy_connection;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+    proxy_set_header X-Forwarded-Ssl $proxy_x_forwarded_ssl;
+    proxy_set_header X-Forwarded-Port $proxy_x_forwarded_port;
+
+    proxy_set_header Proxy "";
+
     {% if request_id -%}
     proxy_set_header Request-Id $request_id;
     add_header Request-Id $request_id;
@@ -71,16 +113,16 @@ http {
         }
     }
     {% elif 'Labels' in service.Spec and 'ingress.host' in service.Spec.Labels -%}
+    # {{ service.Spec.Labels['ingress.host'] }}
+    upstream upstream-{{ service.Spec.Labels['ingress.host'] }} {
+        server {{ service.Spec.Name }}:{{ service.Spec.Labels['ingress.port']|default('80') }};
+    }
     server {
-        listen 80;
         server_name {{ service.Spec.Labels['ingress.host'] }};
-
+        listen 80 ;
         location / {
             resolver 127.0.0.11;
-            set $service_host {{ service.Spec.Name }};
-            set $service_port {{ service.Spec.Labels['ingress.port']|default('80') }};
-            set $service_path {{ service.Spec.Labels['ingress.path']|default('/') }};
-            proxy_pass http://$service_host:$service_port$service_path;
+            proxy_pass http://upstream-{{ service.Spec.Labels['ingress.host'] }};
         }
     }
     {% endif -%}
