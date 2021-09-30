@@ -170,7 +170,7 @@ http {
             proxy_pass $virtual_proto://upstream-https-{{ service['virtual_host'] }};
         }
     }
-    {% elif service['http_config'] -%}
+    {% elif service['http_config'] and not service['https_redirect'] -%}
 
     # {{ service['virtual_host'] }} - {{ service['service_id'] }} - HTTP
     upstream upstream-{{ service['virtual_host'] }} {
@@ -178,7 +178,7 @@ http {
     }
 
     server {
-        server_name {{ service['virtual_host'] and not service['https_redirect'] }};
+        server_name {{ service['virtual_host'] }};
         listen 80 ;
         
         charset utf-8;
