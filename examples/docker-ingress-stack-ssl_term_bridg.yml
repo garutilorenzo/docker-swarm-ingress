@@ -15,9 +15,9 @@ services:
     environment:
       PROXY_MODE: ssl-term-bridg
     deploy:
-      replicas: 3
+      replicas: 1
       update_config:
-        parallelism: 2
+        parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
