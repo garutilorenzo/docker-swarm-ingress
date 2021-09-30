@@ -24,6 +24,7 @@ services:
       placement:
         constraints: [node.role == manager]
 
+# sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./certs/my-service.key -out ./certs/my-service.crt
 # docker secret create my-service.company.tld.key my-service.key
 # docker secret create my-service.company.tld.crt my-service.crt
 secrets:
