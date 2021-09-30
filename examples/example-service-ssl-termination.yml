@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+
+  nginx:
+    image: nginx:alpine
+    networks:
+      - ingress
+    deploy:
+      replicas: 5 
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        ingress.host: my-service.company.tld
+        ingress.port: 80
+        ingress.virtual_proto: http
+        ingress.ssl: enable
+        ingress.ssl_redirect: enable
+
+networks:
+  ingress:
+    external: true
+    name: ingress-routing

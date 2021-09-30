@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  nginx:
+    image: garutilorenzo/docker-swarm-ingress:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ingress
+    secrets:
+      - my-service.company.tld.key
+      - my-service.company.tld.crt
+    environment:
+      PROXY_MODE: ssl-term-bridg
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+
+# docker secret create my-service.company.tld.key my-service.key
+# docker secret create my-service.company.tld.crt my-service.crt
+secrets:
+  my-service.company.tld.key:
+    external: true
+  my-service.company.tld.crt:
+    external: true
+
+# docker network create --driver overlay ingress-routing
+networks:
+  ingress:
+    external: true
+    name: ingress-routing
