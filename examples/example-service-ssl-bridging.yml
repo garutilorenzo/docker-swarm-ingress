@@ -52,4 +52,4 @@ configs:
 networks:
   ingress:
     external: true
-    name: custom-ingress
+    name: ingress-routing

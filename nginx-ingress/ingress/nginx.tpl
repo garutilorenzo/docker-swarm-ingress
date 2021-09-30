@@ -178,7 +178,7 @@ http {
     }
 
     server {
-        server_name {{ service['virtual_host'] }};
+        server_name {{ service['virtual_host'] and not service['https_redirect'] }};
         listen 80 ;
         
         charset utf-8;
