@@ -3,8 +3,9 @@ services:
   nginx:
     image: garutilorenzo/docker-swarm-ingress:localbuild
     build:
-     context: .
+     context: nginx-ingress/
     ports:
       - 80:80
+      - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

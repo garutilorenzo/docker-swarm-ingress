@@ -47,10 +47,56 @@ cli = Client(base_url = os.environ['DOCKER_HOST'])
 
 while True:
     services = cli.services()
+    
+    services_list = []
+    for service in services:
+        http_config = False
+        https_config = False
+        https_redirect = False
+        
+        virtual_host = ''
+        virtual_proto = 'http'
+        alt_virtual_host = ''
+        service_port = 80
+        service_name = ''
+        service_id = service.get('ID','')
+        
+        if service['Spec'].get('Labels'):
+            if service['Spec']['Labels'].get('ingress.host'):
+                http_config = True
+                virtual_host = service['Spec']['Labels'].get('ingress.host')
+                alt_virtual_host = service['Spec']['Labels'].get('ingress.alt_host','')
+                service_port = service['Spec']['Labels'].get('ingress.port', 80)
+                service_name =  service['Spec'].get('Name')
 
+            if service['Spec']['Labels'].get('ingress.ssl') and service['Spec']['Labels'].get('ingress.ssl_redirect'):
+                https_config = True
+                https_redirect = True
+            elif service['Spec']['Labels'].get('ingress.ssl'):
+                https_config = True
+                https_redirect = False
+            
+            if service['Spec']['Labels'].get('ingress.virtual_proto'):
+                virtual_proto = ervice_port = service['Spec']['Labels'].get('ingress.virtual_proto', 'http')
+        
+        out = {
+            'http_config': http_config,
+            'https_config': https_config,
+            'https_redirect': https_redirect,
+            'virtual_host': virtual_host,
+            'virtual_proto': virtual_proto,
+            'alt_virtual_host': alt_virtual_host,
+            'service_port': service_port,
+            'service_name': service_name,
+            'service_id': service_id
+        }
+
+        services_list.append(out)
+    
     new_nginx_config = Template(nginx_config_template).render(
-        config = services,
+        services = services_list,
         request_id = os.environ['USE_REQUEST_ID'] in ['true', 'yes', '1'],
+        proxy_mode = os.environ['PROXY_MODE'], # 'ssl-passthrough, ssl-termination, ssl-bridging
         log_pattern = resolve_pattern(os.environ['LOG_FORMAT'])
     )
 
