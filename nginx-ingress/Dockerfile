@@ -1,5 +1,4 @@
 FROM nginx:alpine
-MAINTAINER Jakob Jarosch <dev@jakobjarosch.de>
 
 RUN apk add --update --no-cache python3 curl bash openssl && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
