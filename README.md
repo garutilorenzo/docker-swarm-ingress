@@ -1,11 +1,13 @@
 # Ingress Service for Docker Swarm
 
-[![Laravel CI](https://github.com/garutilorenzo/docker-swarm-ingress/actions/workflows/ci.yml/badge.svg)](https://github.com/garutilorenzo/docker-swarm-ingress/actions/workflows/ci.yml)
+[![docker swarm ingress CI](https://github.com/garutilorenzo/docker-swarm-ingress/actions/workflows/ci.yml/badge.svg)](https://github.com/garutilorenzo/docker-swarm-ingress/actions/workflows/ci.yml)
 [![GitHub issues](https://img.shields.io/github/issues/garutilorenzo/docker-swarm-ingress)](https://github.com/garutilorenzo/docker-swarm-ingress/issues)
 ![GitHub](https://img.shields.io/github/license/garutilorenzo/docker-swarm-ingress)
 [![GitHub forks](https://img.shields.io/github/forks/garutilorenzo/docker-swarm-ingress)](https://github.com/garutilorenzo/docker-swarm-ingress/network)
 [![GitHub stars](https://img.shields.io/github/stars/garutilorenzo/docker-swarm-ingress)](https://github.com/garutilorenzo/docker-swarm-ingress/stargazers)
 [![Docker Stars](https://img.shields.io/docker/stars/garutilorenzo/docker-swarm-ingress?style=flat-square)](https://hub.docker.com/r/garutilorenzo/docker-swarm-ingress) [![Docker Pulls](https://img.shields.io/docker/pulls/garutilorenzo/docker-swarm-ingress?style=flat-square)](https://hub.docker.com/r/garutilorenzo/docker-swarm-ingress)
+
+![nginx-ingress-controller-small](https://garutilorenzo.github.io/images/nginx-ingress-controller-small.png)
 
 This is a minimalistic approach to allow a routing of external requests into a
 Docker Swarm while routing based on the public hostname.
