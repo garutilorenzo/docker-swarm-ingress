@@ -21,6 +21,8 @@ The ingress service consists of a nginx server and a python script which periodi
 updates the nginx configuration. The service communicates with the docker daemon
 to retrieve the latest service configuration.
 
+A detailed guide with some examples is available [here](https://garutilorenzo.github.io/nginx-ingress-controller/)
+
 ### Run the Service
 
 The Ingress service acts as a reverse proxy in your cluster. It exposes port 80
@@ -43,6 +45,53 @@ the configuration of nginx.
 
 The ingress service should be scaled to multiple nodes to prevent short outages
 when the node with the ingress servic becomes unresponsive (use `--replicas X` when starting the service).
+
+To deploy the service you can use the .yml file in the example directory:
+
+```
+docker stack deploy -c exaples/docker-ingress-stack.yml ingress
+```
+
+check the stack status:
+
+```
+docker stack ps ingress
+
+
+ID             NAME                    IMAGE                                    NODE      DESIRED STATE   CURRENT STATE              ERROR     PORTS
+i28vwvmua0b3   ingress_nginx.1   garutilorenzo/docker-swarm-ingress:dev   node-2    Running         Preparing 11 seconds ago
+```
+
+check the service logs:
+
+```
+docker service  logs -f ingress_nginx
+
+
+ingress_nginx.1.i28vwvmua0b3@node-2    | Generating a RSA private key
+ingress_nginx.1.i28vwvmua0b3@node-2    | ........................................................++++
+ingress_nginx.1.i28vwvmua0b3@node-2    | ................................................++++
+ingress_nginx.1.i28vwvmua0b3@node-2    | writing new private key to '/etc/nginx/default.key'
+ingress_nginx.1.i28vwvmua0b3@node-2    | -----
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: using the "epoll" event method
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: nginx/1.21.3
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: built by gcc 10.3.1 20210424 (Alpine 10.3.1_git20210424) 
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: OS: Linux 5.4.0-88-generic
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: start worker processes
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: start worker process 8
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:51:59 [notice] 1#1: start worker process 9
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 10#10: signal process started
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 1#1: signal 1 (SIGHUP) received from 10, reconfiguring
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 1#1: reconfiguring
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 9#9: gracefully shutting down
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 9#9: exiting
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 9#9: exit
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 8#8: gracefully shutting down
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 8#8: exiting
+ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:52:01 [notice] 8#8: exit
+
+```
 
 ### Register a Service for Ingress
 
@@ -84,9 +133,29 @@ docker service update \
   --label-add ingress.port=8080 \
   my-service
 ```
+
+You can also use the example provided in the examples dir for a test:
+
+```
+docker stack deploy -c examples/example-service.yml service-test
+```
+
+The service use the *my-service.company.tld* hostname.
+
+Wait for nginx reload, check the logs of the nginx service:
+
+```
+docker service  logs -f ingress_nginx
+
+...
+...
+
+nginx-ingress_nginx.1.i28vwvmua0b3@node-2    | 2021/10/18 13:53:31 [notice] 94#94: signal process started
+```
+
 ### SSL
 
-By default the container is configured in "SSL SL Passthrough" mode. It's also possible to use SSL Termination and SSL Bridging mode.
+By default the container is configured in "SSL Passthrough" mode. It's also possible to use SSL Termination and SSL Bridging mode.
 SSL Passthrough and SSL Termination/Bridging exclude each others so the nginx ingress controller can work in SSL termination mode **OR** in SSL Termination/Bridging mode.
 
 To set the mode use the environment variable PROXY_MODE, default ssl-passthrough.
