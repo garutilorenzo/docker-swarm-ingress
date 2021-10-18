@@ -32,7 +32,7 @@ jobs:
           DOCKER_SWARM_INGRESS_IMAGE_NAME=${COMPOSE_IMAGE_NAME#*/}:latest
           echo DOCKER_SWARM_INGRESS_IMAGE_NAME=$DOCKER_SWARM_INGRESS_IMAGE_NAME
           echo DOCKER_SWARM_INGRESS_FULL_IMAGE=$DOCKER_SWARM_INGRESS_FULL_IMAGE
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$COMPOSE_IMAGE_NAME
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$DOCKER_SWARM_INGRESS_IMAGE_NAME
           echo IMAGE_ID=$IMAGE_ID
           docker tag $DOCKER_SWARM_INGRESS_FULL_IMAGE $IMAGE_ID
           docker push $IMAGE_ID
