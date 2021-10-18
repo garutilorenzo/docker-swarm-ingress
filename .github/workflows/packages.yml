@@ -1,4 +1,4 @@
-name: Docker Swarm Ingress
+name: Docker Swarm Ingress Packages
 
 on:
   push:
@@ -8,7 +8,8 @@ on:
       - v*
 
 env:
-  DOCKER_SWARM_INGRESS_FULL_IMAGE: garutilorenzo/docker-swarm-ingress:localbuild
+  COMPOSE_IMAGE_NAME: garutilorenzo/docker-swarm-ingress
+  COMPOSE_IMAGE_TAG: localbuild
 
 jobs:
 
@@ -27,9 +28,11 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Push image
         run: |
-          DOCKER_SWARM_INGRESS_IMAGE_NAME=${DOCKER_SWARM_INGRESS_FULL_IMAGE#*/}
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$DOCKER_SWARM_INGRESS_IMAGE_NAME:latest
+          DOCKER_SWARM_INGRESS_FULL_IMAGE=$COMPOSE_IMAGE_NAME:$COMPOSE_IMAGE_TAG
+          DOCKER_SWARM_INGRESS_IMAGE_NAME=${COMPOSE_IMAGE_NAME#*/}:latest
           echo DOCKER_SWARM_INGRESS_IMAGE_NAME=$DOCKER_SWARM_INGRESS_IMAGE_NAME
+          echo DOCKER_SWARM_INGRESS_FULL_IMAGE=$DOCKER_SWARM_INGRESS_FULL_IMAGE
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$COMPOSE_IMAGE_NAME
           echo IMAGE_ID=$IMAGE_ID
           docker tag $DOCKER_SWARM_INGRESS_FULL_IMAGE $IMAGE_ID
           docker push $IMAGE_ID
