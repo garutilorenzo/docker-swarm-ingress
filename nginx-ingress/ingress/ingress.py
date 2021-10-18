@@ -1,9 +1,25 @@
 from docker import Client
 from jinja2 import Template
 
-import os
+import os, socket
 import subprocess
 import time
+
+def wait_for_dns_service(services):
+    for service in services:
+        if service['http_config'] and service['service_name']:
+            while True:
+                try:
+                    ip_address = socket.gethostbyname_ex(service['service_name'])
+                    if os.environ['DEBUG'] in ['true', 'yes', '1']:
+                        print(ip_address)
+                        print('Success')
+                    break
+                except Exception as e:
+                    if os.environ['DEBUG'] in ['true', 'yes', '1']:
+                        print('Too early wait')
+                        print(e)
+                    time.sleep(int(os.environ['DNS_UPDATE_INTERVAL']))
 
 def resolve_pattern(format):
     if format == 'json':
@@ -106,6 +122,9 @@ while True:
         with open(nginx_config_path, 'w') as handle:
             handle.write(new_nginx_config)
 
+        #Wait for all the DNS services are resolved, before reloading nginx
+        wait_for_dns_service(services_list)
+        
         # Reload nginx with the new configuration
         subprocess.call(['nginx', '-s', 'reload'])
 

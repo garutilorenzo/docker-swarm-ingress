@@ -6,6 +6,7 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 RUN pip3 install docker-py jinja2
 ENV DOCKER_HOST "unix:///var/run/docker.sock"
 ENV UPDATE_INTERVAL "30"
+ENV DNS_UPDATE_INTERVAL "5"
 ENV DEBUG "false"
 ENV USE_REQUEST_ID "true"
 ENV LOG_FORMAT "default"
