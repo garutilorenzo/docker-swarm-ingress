@@ -58,3 +58,19 @@ jobs:
         docker tag $IMAGE_NAME:latest $IMAGE_ID_TAG
         docker push $IMAGE_ID
         docker push $IMAGE_ID_TAG
+    - name: docker login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: docker push mysql-innodb-cluster image
+      run: |
+        IMAGE_ID=${{ secrets.DOCKER_USER }}/$IMAGE_NAME:latest
+        IMAGE_ID_TAG=${{ secrets.DOCKER_USER }}/$IMAGE_NAME:$NGINX_VERSION
+        echo IMAGE_ID=$IMAGE_ID
+        echo IMAGE_ID_TAG=$IMAGE_ID_TAG
+        docker tag $IMAGE_NAME:latest $IMAGE_ID
+        docker tag $IMAGE_NAME:latest $IMAGE_ID_TAG
+        docker push $IMAGE_ID
+        docker push $IMAGE_ID_TAG
