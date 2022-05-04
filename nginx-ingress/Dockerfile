@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:1.21.6-alpine
 
 RUN apk add --update --no-cache python3 curl bash openssl && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip

@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   nginx:
-    image: garutilorenzo/docker-swarm-ingress:localbuild
+    image: docker-swarm-ingress:latest
     build:
      context: nginx-ingress/
     ports:

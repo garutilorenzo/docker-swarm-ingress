@@ -4,15 +4,24 @@ on:
   push:
     branches:
     - master
+    tags:
+    - v*
   pull_request:
     branches:
     - master
+
+env:
+  IMAGE_NAME: docker-swarm-ingress
+  NGINX_VERSION: 1.21.6-alpine
 
 jobs:
 
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
 
     steps:
     - uses: actions/checkout@v2
@@ -39,3 +48,15 @@ jobs:
         sarif_file: ${{ steps.scan.outputs.sarif }}
     - name: Inspect action SARIF report
       run: cat ${{ steps.scan.outputs.sarif }}
+    - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Push image
+      run: |
+        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:latest
+        IMAGE_ID_TAG=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$NGINX_VERSION
+        echo IMAGE_ID=$IMAGE_ID
+        echo IMAGE_ID_TAG=$IMAGE_ID_TAG
+        docker tag $IMAGE_NAME:latest $IMAGE_ID
+        docker tag $IMAGE_NAME:latest $IMAGE_ID_TAG
+        docker push $IMAGE_ID
+        docker push $IMAGE_ID_TAG
