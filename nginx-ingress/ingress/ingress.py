@@ -94,7 +94,11 @@ while True:
             
             if service['Spec']['Labels'].get('ingress.virtual_proto'):
                 virtual_proto = ervice_port = service['Spec']['Labels'].get('ingress.virtual_proto', 'http')
-        
+            
+            certificate_name = None
+            if service['Spec']['Labels'].get('ingress.certificate_name'):
+                certificate_name = service['Spec']['Labels'].get('ingress.certificate_name')
+            
         out = {
             'http_config': http_config,
             'https_config': https_config,
@@ -104,7 +108,8 @@ while True:
             'alt_virtual_host': alt_virtual_host,
             'service_port': service_port,
             'service_name': service_name,
-            'service_id': service_id
+            'service_id': service_id,
+            'certificate_name': certificate_name
         }
 
         services_list.append(out)

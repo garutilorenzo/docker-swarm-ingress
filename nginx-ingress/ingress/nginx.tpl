@@ -157,10 +157,14 @@ http {
 
         charset utf-8;
 
-        # SSL Settings        
+        # SSL Settings
+        {% if service.certificate_name -%}
+        ssl_certificate /run/secrets/{{ service['certificate_name'] }}.crt;
+        ssl_certificate_key /run/secrets/{{ service['certificate_name'] }}.key;
+        {% else %}
         ssl_certificate /run/secrets/{{ service['virtual_host'] }}.crt;
         ssl_certificate_key /run/secrets/{{ service['virtual_host'] }}.key;
-       
+        {% endif %}
         include /etc/nginx/options-ssl-nginx.conf;
         ssl_dhparam /etc/nginx/ssl-dhparams.pem;
 
