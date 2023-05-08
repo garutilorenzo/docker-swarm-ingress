@@ -6,9 +6,8 @@ on:
     - master
     tags:
     - v*
-  pull_request:
-    branches:
-    - master
+    paths:
+    - 'nginx-ingress/**'
 
 env:
   IMAGE_NAME: docker-swarm-ingress
