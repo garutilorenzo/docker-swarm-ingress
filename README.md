@@ -109,6 +109,8 @@ By default a request would be redirected to `http://service-name:80/`.
 | `ingress.host` | `yes` | `-`      | When configured ingress is enabled. The hostname which should be mapped to the service. Wildcards `*` and regular expressions are allowed. |
 | `ingress.port` | `no`  | `80`    | The port which serves the service in the cluster. |
 | `ingress.virtual_proto` | `no`  | `http`     | The protocol used to connect to the backends |
+| `ingress.certificate_name` | `no`  | ``     | Custom name of ssl certificate used instead of domain name |
+
 
 ### Run a Service with Enabled Ingress
 
@@ -191,6 +193,25 @@ docker service create --name ingress \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --constraint node.role==manager \
   garutilorenzo/docker-swarm-ingress
+```
+
+#### Use custom certificate name
+
+Create the secrets with a custom name in this case is `wildcard-name.tld`:
+
+```
+docker secret create wildcard-name.tld.key my-service.key
+docker secret create wildcard-name.tld.crt my-service.crt
+```
+
+then use the label `ingress.certificate_name` to specify the custom certificate name:
+
+```
+docker service create --name my-service \
+  --network ingress-routing \
+  --label ingress.host=my-service.company.tld \
+  --label ingress.certificate_name=wildcard-name.tld \
+  nginx
 ```
 
 #### SSL Passthrough
