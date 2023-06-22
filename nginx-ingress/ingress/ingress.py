@@ -93,7 +93,7 @@ while True:
                 https_redirect = False
             
             if service['Spec']['Labels'].get('ingress.virtual_proto'):
-                virtual_proto = service_port = service['Spec']['Labels'].get('ingress.virtual_proto', 'http')
+                virtual_proto = service['Spec']['Labels'].get('ingress.virtual_proto', 'http')
             
             certificate_name = None
             if service['Spec']['Labels'].get('ingress.certificate_name'):
