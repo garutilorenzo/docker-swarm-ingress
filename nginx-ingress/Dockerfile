@@ -1,11 +1,9 @@
-FROM nginx:1.21.6-alpine
+FROM nginx:1.25.0-alpine
 
 RUN apk add --update --no-cache python3 curl bash openssl && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
-COPY requirements.txt ./
-RUN pip3 install --no-cache-dir -r requirements.txt\
-    && rm -rf ./requirements.txt
+RUN pip3 install --no-cache-dir docker jinja2
 ENV DOCKER_HOST "unix:///var/run/docker.sock"
 ENV UPDATE_INTERVAL "30"
 ENV DNS_UPDATE_INTERVAL "5"

@@ -1,4 +1,4 @@
-from docker import Client
+import docker
 from jinja2 import Template
 
 import os, socket
@@ -59,10 +59,10 @@ with open(nginx_config_path, 'r') as handle:
 with open(nginx_config_template_path, 'r') as handle:
     nginx_config_template = handle.read()
 
-cli = Client(base_url = os.environ['DOCKER_HOST'])
+d_cli = docker.DockerClient(base_url=os.environ['DOCKER_HOST'])
 
 while True:
-    services = cli.services()
+    services = d_cli.services.list()
     
     services_list = []
     for service in services:
@@ -75,31 +75,31 @@ while True:
         alt_virtual_host = ''
         service_port = 80
         service_name = ''
-        service_id = service.get('ID','')
+        service_id = service.id
 
         # issue 15
         certificate_name = None
         
-        if service['Spec'].get('Labels'):
-            if service['Spec']['Labels'].get('ingress.host'):
+        if service.attrs['Spec'].get('Labels'):
+            if service.attrs['Spec']['Labels'].get('ingress.host'):
                 http_config = True
-                virtual_host = service['Spec']['Labels'].get('ingress.host')
-                alt_virtual_host = service['Spec']['Labels'].get('ingress.alt_host','')
-                service_port = service['Spec']['Labels'].get('ingress.port', 80)
-                service_name =  service['Spec'].get('Name')
+                virtual_host = service.attrs['Spec']['Labels'].get('ingress.host')
+                alt_virtual_host = service.attrs['Spec']['Labels'].get('ingress.alt_host','')
+                service_port = service.attrs['Spec']['Labels'].get('ingress.port', 80)
+                service_name =  service.attrs['Spec'].get('Name')
 
-            if service['Spec']['Labels'].get('ingress.ssl') and service['Spec']['Labels'].get('ingress.ssl_redirect'):
+            if service.attrs['Spec']['Labels'].get('ingress.ssl') and service.attrs['Spec']['Labels'].get('ingress.ssl_redirect'):
                 https_config = True
                 https_redirect = True
-            elif service['Spec']['Labels'].get('ingress.ssl'):
+            elif service.attrs['Spec']['Labels'].get('ingress.ssl'):
                 https_config = True
                 https_redirect = False
             
-            if service['Spec']['Labels'].get('ingress.virtual_proto'):
-                virtual_proto = service['Spec']['Labels'].get('ingress.virtual_proto', 'http')
+            if service.attrs['Spec']['Labels'].get('ingress.virtual_proto'):
+                virtual_proto = service.attrs['Spec']['Labels'].get('ingress.virtual_proto', 'http')
             
-            if service['Spec']['Labels'].get('ingress.certificate_name'):
-                certificate_name = service['Spec']['Labels'].get('ingress.certificate_name')
+            if service.attrs['Spec']['Labels'].get('ingress.certificate_name'):
+                certificate_name = service.attrs['Spec']['Labels'].get('ingress.certificate_name')
             
         out = {
             'http_config': http_config,
