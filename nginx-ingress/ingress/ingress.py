@@ -76,6 +76,9 @@ while True:
         service_port = 80
         service_name = ''
         service_id = service.get('ID','')
+
+        # issue 15
+        certificate_name = None
         
         if service['Spec'].get('Labels'):
             if service['Spec']['Labels'].get('ingress.host'):
@@ -95,7 +98,6 @@ while True:
             if service['Spec']['Labels'].get('ingress.virtual_proto'):
                 virtual_proto = service['Spec']['Labels'].get('ingress.virtual_proto', 'http')
             
-            certificate_name = None
             if service['Spec']['Labels'].get('ingress.certificate_name'):
                 certificate_name = service['Spec']['Labels'].get('ingress.certificate_name')
             
