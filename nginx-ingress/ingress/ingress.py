@@ -98,7 +98,6 @@ while True:
             if service.attrs['Spec']['Labels'].get('ingress.virtual_proto'):
                 virtual_proto = service.attrs['Spec']['Labels'].get('ingress.virtual_proto', 'http')
             
-            certificate_name = None
             if service.attrs['Spec']['Labels'].get('ingress.certificate_name'):
                 certificate_name = service.attrs['Spec']['Labels'].get('ingress.certificate_name')
             
