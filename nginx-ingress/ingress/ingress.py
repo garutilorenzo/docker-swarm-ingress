@@ -75,7 +75,7 @@ while True:
         alt_virtual_host = ''
         service_port = 80
         service_name = ''
-        service_id = service.get('id','')
+        service_id = service.id
 
         # issue 15
         certificate_name = None
