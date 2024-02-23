@@ -76,6 +76,9 @@ while True:
         service_port = 80
         service_name = ''
         service_id = service.get('id','')
+
+        # issue 15
+        certificate_name = None
         
         if service.attrs['Spec'].get('Labels'):
             if service.attrs['Spec']['Labels'].get('ingress.host'):
